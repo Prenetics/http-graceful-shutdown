@@ -28,16 +28,18 @@ export class GracefulShutdownManager {
 
   /**
    * Initiates graceful termination of the server.
-   * It first asks server to stop accepting new requests and then
+   * It first asks server to stop accepting new requests if a call back is provided and then
    * terminates all open idle connections.
    * By putting the server into termination phase all active connections
    * would be automatically terminated after requests are properly complete.
    */
-  public terminate (callback: () => void) {
+  public terminate (callback?: () => void) {
 
     this.terminating = true;
 
-    this.server.close(callback);
+    if (callback) {
+      this.server.close(callback);
+    }
 
     for (const connectionId in this.connections) {
       if (this.connections.hasOwnProperty(connectionId)) {
